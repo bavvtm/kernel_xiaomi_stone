@@ -194,6 +194,7 @@ config NETHUNTER_CAN_SUPPORT
 	select CAN_GW
 	select CAN_VCAN
 	select CAN_DEV
+	select CAN_CAN327
 
 	select CAN_SLCAN
 	select CAN_GS_USB
