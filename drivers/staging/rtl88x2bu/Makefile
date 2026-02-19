@@ -21,7 +21,9 @@ ifeq ($(GCC_VER_49),1)
 ccflags-y += -Wno-date-time	# Fix compile error && warning on gcc 4.9 and later
 endif
 
-ccflags-y += -I$(src)/include
+EXTRA_CFLAGS += -I$(src)/include -I$(srctree)/drivers/staging/rtl88x2bu/include \
+								-I$(src)/hal/phydm -I$(srctree)/drivers/staging/rtl88x2bu/hal/phydm \
+								-I$(src)/platform -I$(srctree)/drivers/staging/rtl88x2bu/platform
 
 ldflags-y += --strip-debug
 

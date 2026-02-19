@@ -17,7 +17,9 @@ ifeq ($(GCC_VER_49),1)
 EXTRA_CFLAGS += -Wno-date-time	# Fix compile error && warning on gcc 4.9 and later
 endif
 
-EXTRA_CFLAGS += -I$(src)/include
+EXTRA_CFLAGS += -I$(src)/include -I$(srctree)/drivers/staging/rtl8188eus/include \
+								-I$(src)/hal/phydm -I$(srctree)/drivers/staging/rtl8188eus/hal/phydm \
+								-I$(src)/platform -I$(srctree)/drivers/staging/rtl8188eus/platform
 
 EXTRA_LDFLAGS += --strip-debug
 
