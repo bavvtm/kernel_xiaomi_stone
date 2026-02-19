@@ -1,6 +1,9 @@
 config RTL8822BU
 	tristate "Realtek 8822B USB WiFi"
 	depends on USB
+	depends on NETHUNTER_SUPPORT
+	depends on NETHUNTER_WIFI_SUPPORT
+	default y
 	---help---
 	  RTL88X2BU driver updated for current kernels.
 
