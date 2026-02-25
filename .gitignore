@@ -157,3 +157,4 @@ Android.bp
 # Addons nethunter realtekk driver
 !/drivers/staging/rtl8188eus/**/*
 !/drivers/staging/rtl8812au/**/*
+!/drivers/staging/rtl88x2bu/**/*
