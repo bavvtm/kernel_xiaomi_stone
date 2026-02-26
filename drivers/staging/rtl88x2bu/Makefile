@@ -15,6 +15,11 @@ ccflags-y += -Wno-array-bounds
 ccflags-y += -Wno-address
 ccflags-y += -Wno-missing-prototypes
 ccflags-y += -Wno-missing-declarations
+ccflags-y += -Wno-misleading-indentation
+ccflags-y += -Wno-unused-but-set-variable
+ccflags-y += -Wno-self-assign
+ccflags-y += -Wno-sign-compare
+ccflags-y += -Wno-unterminated-string-initialization #not safe
 
 GCC_VER_49 := $(shell echo `$(CC) -dumpversion | cut -f1-2 -d.` \>= 4.9 | bc )
 ifeq ($(GCC_VER_49),1)
