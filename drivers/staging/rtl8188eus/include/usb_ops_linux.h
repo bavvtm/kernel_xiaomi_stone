@@ -40,7 +40,11 @@
 #define usb_bulkout_zero_complete(purb, regs)	usb_bulkout_zero_complete(purb)
 #define usb_write_mem_complete(purb, regs)	usb_write_mem_complete(purb)
 #define usb_write_port_complete(purb, regs)	usb_write_port_complete(purb)
-#define usb_read_port_complete(purb, regs)	usb_read_port_complete(purb)
+#ifdef __RTL8188EUS_COEXIST_H__
+		#define rtl8188eus_usb_read_port_complete(purb, regs)	rtl8188eus_usb_read_port_complete(purb)
+#else
+		#define usb_read_port_complete(purb, regs)	usb_read_port_complete(purb)
+#endif
 #define usb_read_interrupt_complete(purb, regs)	usb_read_interrupt_complete(purb)
 #endif
 

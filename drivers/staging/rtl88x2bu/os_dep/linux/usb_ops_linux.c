@@ -765,7 +765,11 @@ void usb_recv_tasklet(void *priv)
 	}
 }
 
+#ifdef __RTL88X2BU_COEXIST_H__
+void rtl88x2bu_usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
+#else
 void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
+#endif
 {
 	struct recv_buf	*precvbuf = (struct recv_buf *)purb->context;
 	_adapter			*padapter = (_adapter *)precvbuf->adapter;
@@ -798,7 +802,11 @@ void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 		}
 	} else {
 
+#ifdef __RTL88X2BU_COEXIST_H__
+		RTW_INFO("###=> rtl88x2bu_usb_read_port_complete => urb.status(%d)\n", purb->status);
+#else
 		RTW_INFO("###=> usb_read_port_complete => urb.status(%d)\n", purb->status);
+#endif
 
 		if (rtw_inc_and_chk_continual_io_error(adapter_to_dvobj(padapter)) == _TRUE)
 			rtw_set_surprise_removed(padapter);
@@ -864,7 +872,11 @@ u32 usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *rmem)
 		usb_fill_bulk_urb(purb, pusbd, pipe,
 			precvbuf->pbuf,
 			MAX_RECVBUF_SZ,
+#ifdef __RTL88X2BU_COEXIST_H__
+			rtl88x2bu_usb_read_port_complete,
+#else
 			usb_read_port_complete,
+#endif
 			precvbuf);/* context is precvbuf */
 
 		purb->transfer_dma = precvbuf->dma_transfer_addr;
@@ -918,7 +930,11 @@ void usb_recv_tasklet(void *priv)
 	}
 }
 
+#ifdef __RTL88X2BU_COEXIST_H__
+void rtl88x2bu_usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
+#else
 void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
+#endif
 {
 	struct recv_buf	*precvbuf = (struct recv_buf *)purb->context;
 	_adapter			*padapter = (_adapter *)precvbuf->adapter;
@@ -957,7 +973,11 @@ void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 		}
 	} else {
 
+#ifdef __RTL88X2BU_COEXIST_H__
+		RTW_INFO("###=> rtl88x2bu_usb_read_port_complete => urb.status(%d)\n", purb->status);
+#else
 		RTW_INFO("###=> usb_read_port_complete => urb.status(%d)\n", purb->status);
+#endif
 
 		if (rtw_inc_and_chk_continual_io_error(adapter_to_dvobj(padapter)) == _TRUE)
 			rtw_set_surprise_removed(padapter);
@@ -1054,7 +1074,11 @@ recv_buf_hook:
 	usb_fill_bulk_urb(purb, pusbd, pipe,
 		precvbuf->pbuf,
 		MAX_RECVBUF_SZ,
+#ifdef __RTL88X2BU_COEXIST_H__
+		rtl88x2bu_usb_read_port_complete,
+#else
 		usb_read_port_complete,
+#endif
 		precvbuf);
 
 	err = usb_submit_urb(purb, GFP_ATOMIC);

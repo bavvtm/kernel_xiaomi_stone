@@ -23,7 +23,8 @@ endif
 
 EXTRA_CFLAGS += -I$(src)/include -I$(srctree)/drivers/staging/rtl88x2bu/include \
 								-I$(src)/hal/phydm -I$(srctree)/drivers/staging/rtl88x2bu/hal/phydm \
-								-I$(src)/platform -I$(srctree)/drivers/staging/rtl88x2bu/platform
+								-I$(src)/platform -I$(srctree)/drivers/staging/rtl88x2bu/platform \
+								-include rtl88x2bu_coexist.h
 
 ldflags-y += --strip-debug
 

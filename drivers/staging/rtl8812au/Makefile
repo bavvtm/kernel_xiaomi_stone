@@ -21,7 +21,8 @@ EXTRA_CFLAGS += -Wno-vla -g
 
 EXTRA_CFLAGS += -I$(src)/include -I$(srctree)/drivers/staging/rtl8812au/include \
 								-I$(src)/hal/phydm -I$(srctree)/drivers/staging/rtl8812au/hal/phydm \
-								-I$(src)/platform -I$(srctree)/drivers/staging/rtl8812au/platform
+								-I$(src)/platform -I$(srctree)/drivers/staging/rtl8812au/platform \
+								-include rtl8812au_coexist.h
 
 EXTRA_LDFLAGS += --strip-all -O3
 

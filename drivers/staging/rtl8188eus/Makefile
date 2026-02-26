@@ -19,7 +19,8 @@ endif
 
 EXTRA_CFLAGS += -I$(src)/include -I$(srctree)/drivers/staging/rtl8188eus/include \
 								-I$(src)/hal/phydm -I$(srctree)/drivers/staging/rtl8188eus/hal/phydm \
-								-I$(src)/platform -I$(srctree)/drivers/staging/rtl8188eus/platform
+								-I$(src)/platform -I$(srctree)/drivers/staging/rtl8188eus/platform \
+								-include rtl8188eus_coexist.h
 
 EXTRA_LDFLAGS += --strip-debug
 
