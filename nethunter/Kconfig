@@ -1,0 +1,210 @@
+menu "NetHunter Support"
+
+config NETHUNTER_SUPPORT
+	tristate "Enable NetHunter Support"
+	default n
+	help
+	  Core features required for Kali NetHunter.
+
+	# System
+	select SYSVIPC
+	select TMPFS
+	select TMPFS_POSIX_ACL
+	select PACKET
+	select UNIX
+
+	# Wifi
+	select CFG80211
+	select MAC80211
+	select MAC80211_MESH
+	select MAC80211_RC_MINSTREL
+	select MAC80211_RC_MINSTREL_HT
+	select MAC80211_RC_MINSTREL_VHT
+	select CFG80211_WEXT
+	select RFKILL
+
+	# Injection friendly
+	select CFG80211_CERTIFICATION_ONUS
+
+	# Bluetooth
+	select BT
+	select BT_BREDR
+	select BT_RFCOMM
+	select BT_RFCOMM_TTY
+	select BT_BNEP
+	select BT_BNEP_MC_FILTER
+	select BT_BNEP_PROTO_FILTER
+	select BT_HIDP
+	select BT_HS
+	select BT_LE
+	select BT_HCIBTUSB
+	select BT_HCIBTUSB_BCM
+	select BT_HCIBTUSB_RTL
+	select BT_HCIUART
+	select BT_HCIVHCI
+
+	# USB
+	select USB
+	select USB_OTG
+	select USB_MON
+	select USB_ACM
+	select USB_STORAGE
+	select USB_SERIAL
+	select USB_SERIAL_GENERIC
+	select USB_SERIAL_CONSOLE
+	select USB_SERIAL_FTDI_SIO
+	select USB_SERIAL_CP210X
+	select USB_SERIAL_PL2303
+
+	# USB gadget
+	select USB_GADGET
+	select USB_CONFIGFS
+	select USB_CONFIGFS_ACM
+	select USB_CONFIGFS_RNDIS
+	select USB_CONFIGFS_ECM
+	select USB_CONFIGFS_EEM
+	select USB_CONFIGFS_MASS_STORAGE
+	select USB_CONFIGFS_F_HID
+	select USB_F_HID
+
+	# USB IP
+	select USBIP_CORE
+	select USBIP_VHCI_HCD
+	select USBIP_HOST
+	select USBIP_VUDC
+	select NET
+	select INET
+
+	# HID
+	select HID
+	select HIDRAW
+	select UHID
+	select HID_GENERIC
+	select USB_HID
+
+
+# =========================
+# WiFi Drivers (Best Choice)
+# =========================
+
+config NETHUNTER_WIFI_SUPPORT
+	tristate "WiFi adapter support"
+	default y if NETHUNTER_SUPPORT
+	depends on NETHUNTER_SUPPORT
+
+	# Vendors
+	select WLAN_VENDOR_ATH
+	select WLAN_VENDOR_MEDIATEK
+	select WLAN_VENDOR_REALTEK
+	select WLAN_VENDOR_RALINK
+	select WLAN_VENDOR_ZYDAS
+
+	# NetHunter adapters
+	select ATH9K_HTC
+	select CARL9170
+	select CARL9170
+	select ATH6KL
+	select ATH6KL_USB
+	select MT7601U
+	select RT2X00
+	select RT2800USB
+	select RT2800USB_RT33XX
+	select RT2800USB_RT35XX
+	select RT2800USB_RT3573
+	select RT2800USB_RT53XX
+	select RT2800USB_RT55XX
+	select RT2800USB_UNKNOWN
+	select RTL_CARDS
+	select RTL8192CU
+	select RTL8XXXU
+	select RTL8XXXU_UNTESTED
+	select USB_ZD1201
+	select ZD1211RW
+
+	# Monitor via RNDIS
+	select USB_NET_RNDIS_WLAN
+
+
+# =========================
+# Ethernet USB
+# =========================
+
+config NETHUNTER_ETHERNET_SUPPORT
+	tristate "USB Ethernet adapters"
+	default y if NETHUNTER_SUPPORT
+	depends on NETHUNTER_SUPPORT
+
+	select USB_RTL8150
+	select USB_RTL8152
+
+# =========================
+# NFS Client
+# =========================
+
+config NETHUNTER_NFS_SUPPORT
+	tristate "NFS"
+	default n
+	depends on NETHUNTER_SUPPORT
+
+	select NETWORK_FILESYSTEMS
+
+	select NFS_FS
+	select NFS_V3
+	select NFS_V4
+	select NFS_COMMON
+
+	select NFSD
+	select NFSD_V3
+	select NFSD_V4
+
+	select SUNRPC
+	select LOCKD
+	select EXPORTFS
+
+
+# =========================
+# SDR
+# =========================
+
+config NETHUNTER_SDR_SUPPORT
+	tristate "SDR support"
+	default n
+	depends on NETHUNTER_SUPPORT
+
+	select MEDIA_SUPPORT
+	select MEDIA_DIGITAL_TV_SUPPORT
+	select MEDIA_SDR_SUPPORT
+	select MEDIA_USB_SUPPORT
+	select USB_AIRSPY
+	select USB_HACKRF
+	select USB_MSI2500
+
+# =========================
+# CAN (CARsenal)
+# =========================
+
+config NETHUNTER_CAN_SUPPORT
+	tristate "CAN bus support"
+	default n
+	depends on NETHUNTER_SUPPORT
+
+	select CAN
+	select CAN_RAW
+	select CAN_BCM
+	select CAN_GW
+	select CAN_VCAN
+	select CAN_DEV
+
+	select CAN_SLCAN
+	select CAN_GS_USB
+	select CAN_PEAK_USB
+	select CAN_ESD_USB2
+	select CAN_KVASER_USB
+	select CAN_MCBA_USB
+	select CAN_8DEV_USB
+	select CAN_EMS_USB
+
+	select NETLINK_DIAG
+	select NET_EMATCH_CANID
+
+endmenu
