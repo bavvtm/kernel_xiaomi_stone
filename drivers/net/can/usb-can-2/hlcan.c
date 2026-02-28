@@ -495,7 +495,7 @@ static int slc_close(struct net_device *dev)
 /* Netdevice DOWN -> UP routine */
 static int slc_open(struct net_device *dev)
 {
-	int ret;
+	int ret = 0;
 	struct slcan *sl = netdev_priv(dev);
 
 	if (sl->tty == NULL)
@@ -586,7 +586,7 @@ static void slc_sync(void)
 
 
 static int hlcan_do_set_mode(struct net_device *dev, enum can_mode mode){
-	int ret;
+	int ret = 0;
 	struct slcan *sl = netdev_priv(dev);
 
 	switch (mode) {
