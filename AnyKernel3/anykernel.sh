@@ -4,7 +4,7 @@
 ## AnyKernel setup
 # begin properties
 properties() { '
-kernel.string=Karbit kernel for MIUI/HyperOS and Legacy AOSP
+kernel.string=Nethunter kernel for MIUI/HyperOS and Legacy AOSP
 do.devicecheck=0
 do.modules=0
 do.systemless=1
