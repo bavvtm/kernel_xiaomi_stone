@@ -206,4 +206,69 @@ config NETHUNTER_CAN_SUPPORT
 	select NETLINK_DIAG
 	select NET_EMATCH_CANID
 
+# ============================================
+# Network Protocol for Tunneling
+# ============================================
+
+config NETHUNTER_TUNNEL_SUPPORT
+	tristate "Tunneling protocols support"
+	default n
+	depends on NETHUNTER_SUPPORT
+
+	select NET_IPIP
+	select NET_IPGRE
+	select NET_IPGRE_DEMUX
+	select NET_IPVTI
+	select NET_FOU
+	select NET_FOU_IP_TUNNELS
+	select IPV6_SIT
+	select IPV6_TUNNEL
+	select IPV6_GRE
+	select NET_IPGRE_BROADCAST
+
+# ============================================
+# NF Tables for modern firewall
+# ============================================
+
+config NETHUNTER_NFTABLES
+	tristate "nftables support"
+	default n
+	depends on NETHUNTER_SUPPORT
+
+	select NF_TABLES
+	select NF_TABLES_INET
+	select NF_TABLES_NETDEV
+	select NF_TABLES_SET
+	select NFT_CT
+	select NFT_LOG
+	select NFT_LIMIT
+	select NFT_MASQ
+	select NFT_NAT
+	select NFT_REDIR
+	select NFT_REJECT
+	select NFT_REJECT_INET
+	select NFT_FIB
+	select NFT_FIB_IPV4
+	select NFT_FIB_IPV6
+	select NFT_FIB_INET
+	select NFT_QUEUE
+	select NFT_SOCKET
+	select NFT_OBJREF
+	select NFT_TUNNEL
+	select NFT_XFRM
+	select NFT_SYNPROXY
+
+# ============================================
+# Network Traffic Control (Advanced)
+# ============================================
+
+config NETHUNTER_NET_TC
+	tristate "Advanced traffic control (police, etc)"
+	default n
+	depends on NETHUNTER_SUPPORT
+
+	select NET_ACT_POLICE
+	select NET_CLS_ACT
+	select NET_SCHED
+
 endmenu
