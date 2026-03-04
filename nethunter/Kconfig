@@ -108,7 +108,6 @@ config NETHUNTER_WIFI_SUPPORT
 	select AR5523
 	select ATH9K_HTC
 	select CARL9170
-	select CARL9170
 	select ATH6KL
 	select ATH6KL_USB
 	select BRCMFMAC
