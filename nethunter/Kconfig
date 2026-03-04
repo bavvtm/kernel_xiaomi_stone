@@ -35,6 +35,10 @@ config NETHUNTER_SUPPORT
 	select BT_HIDP
 	select BT_HS
 	select BT_LE
+	select BT_ATH3K
+	select BT_HCIBCM203X
+	select BT_HCIBFUSB
+	select BT_HCIBPA10X
 	select BT_HCIBTUSB
 	select BT_HCIBTUSB_BCM
 	select BT_HCIBTUSB_RTL
@@ -93,19 +97,30 @@ config NETHUNTER_WIFI_SUPPORT
 
 	# Vendors
 	select WLAN_VENDOR_ATH
+	select WLAN_VENDOR_BROADCOM
+	select WLAN_VENDOR_MARVELL
 	select WLAN_VENDOR_MEDIATEK
 	select WLAN_VENDOR_REALTEK
 	select WLAN_VENDOR_RALINK
 	select WLAN_VENDOR_ZYDAS
 
 	# NetHunter adapters
+	select AR5523
 	select ATH9K_HTC
 	select CARL9170
 	select CARL9170
 	select ATH6KL
 	select ATH6KL_USB
+	select BRCMFMAC
+	select BRCMFMAC_USB
+	select LIBERTAS
+	select LIBERTAS_USB
+	select MWIFIEX
+	select MWIFIEX_USB 
+	select MT76x2U
 	select MT7601U
 	select RT2X00
+	select RT2500USB
 	select RT2800USB
 	select RT2800USB_RT33XX
 	select RT2800USB_RT35XX
@@ -113,10 +128,14 @@ config NETHUNTER_WIFI_SUPPORT
 	select RT2800USB_RT53XX
 	select RT2800USB_RT55XX
 	select RT2800USB_UNKNOWN
+	select RT73USB
 	select RTL_CARDS
+	select RTL8187
 	select RTL8192CU
 	select RTL8XXXU
 	select RTL8XXXU_UNTESTED
+	select RTLWIFI
+	select RTLWIFI_USB
 	select USB_ZD1201
 	select ZD1211RW
 
