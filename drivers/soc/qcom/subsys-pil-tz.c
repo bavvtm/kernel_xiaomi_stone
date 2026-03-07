@@ -995,7 +995,7 @@ static void check_nv(void *drv_data)
 	struct pil_tz_data *d = drv_data;
 	if (strnstr(last_modem_sfr_reason, STR_NV_SIGNATURE_DESTROYED, strlen(last_modem_sfr_reason))) {
 		pr_err("errimei_dev: the NV has been destroyed, should restart to recovery\n");
-		schedule_delayed_work(&create_kobj_work, msecs_to_jiffies(1*1000));
+		queue_delayed_work(system_power_efficient_wq, &create_kobj_work, msecs_to_jiffies(1*1000));
 	} else {
 		subsystem_restart_dev(d->subsys);
 	}

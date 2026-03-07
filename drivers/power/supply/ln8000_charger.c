@@ -862,7 +862,7 @@ static int ln8000_enter_SW(struct ln8000_info *info, int op_mode)
 	/* those are will be enable after stable power line */
 	ln8000_enable_rcp(info, 0);
 	ln8000_enable_ocp(info, 0);
-	schedule_delayed_work(&info->rcp_work, msecs_to_jiffies(1000));
+	queue_delayed_work(system_power_efficient_wq, &info->rcp_work, msecs_to_jiffies(1000));
 #endif
 	ret = ln8000_change_opmode(info, op_mode);
 	if (ret < 0) {
@@ -998,7 +998,7 @@ static int ln8000_charger_set_property(struct power_supply *psy,
 		break;
 	case POWER_SUPPLY_PROP_STATUS:
 		if	(val->intval)
-			schedule_delayed_work(&info->ovp_detect_work, msecs_to_jiffies(10));
+			queue_delayed_work(system_power_efficient_wq, &info->ovp_detect_work, msecs_to_jiffies(10));
 		else
 			cancel_delayed_work(&info->ovp_detect_work);
 		break;
@@ -1199,7 +1199,7 @@ static void check_vac_ov_work(struct ln8000_info *info)
 
 	if (sys_st == 0x02 && fault1_st == 0x00) {  /* connected valid VBUS */
 		if (info->vac_ov_work_on == 0) {        /* vac_ov_work not worked */
-			schedule_delayed_work(&info->vac_ov_work, msecs_to_jiffies(0));
+			queue_delayed_work(system_power_efficient_wq, &info->vac_ov_work, msecs_to_jiffies(0));
 			info->vac_ov_work_on = 1;
 			ln_info("schedule_work : vac_ov_work\n");
 		}
@@ -1330,7 +1330,7 @@ static void get_vcell_work(struct work_struct *work)
 
 	ln8000_get_adc_data(info, LN8000_ADC_CH_VBAT, &info->vbat_uV);
 
-	schedule_delayed_work(&info->vcell_work, msecs_to_jiffies(1000));
+	queue_delayed_work(system_power_efficient_wq, &info->vcell_work, msecs_to_jiffies(1000));
 }
 
 #if defined(LN8000_RCP_PATCH)
@@ -1376,7 +1376,7 @@ static void rcp_control_work(struct work_struct *work)
 		return;
 	}
 
-	schedule_delayed_work(&info->rcp_work, msecs_to_jiffies(1000));
+	queue_delayed_work(system_power_efficient_wq, &info->rcp_work, msecs_to_jiffies(1000));
 }
 #endif
 
@@ -1386,7 +1386,7 @@ static void ovp_detect_work(struct work_struct *work)
 
 	ln8000_check_regmap_data(info);
 
-	schedule_delayed_work(&info->ovp_detect_work, msecs_to_jiffies(1000));
+	queue_delayed_work(system_power_efficient_wq, &info->ovp_detect_work, msecs_to_jiffies(1000));
 }
 
 static void determine_initial_status(struct ln8000_info *info)
@@ -1669,7 +1669,7 @@ static int ln8000_probe(struct i2c_client *client, const struct i2c_device_id *i
 	INIT_DELAYED_WORK(&info->ovp_detect_work, ovp_detect_work);
 
 	INIT_DELAYED_WORK(&info->vcell_work, get_vcell_work);
-	schedule_delayed_work(&info->vcell_work, msecs_to_jiffies(1000));
+	queue_delayed_work(system_power_efficient_wq, &info->vcell_work, msecs_to_jiffies(1000));
 
 	device_init_wakeup(info->dev, 1);
 

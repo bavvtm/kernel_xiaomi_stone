@@ -63,7 +63,7 @@ struct devcd_entry {
 	 *   if still armed.
 	 *
 	 *   This is handled by using "if (cancel_delayed_work()) {
-	 *   schedule_delayed_work() }", to prevent re-arming after having
+	 *   queue_delayed_work(system_power_efficient_wq, ) }", to prevent re-arming after having
 	 *   been previously fired.
 	 * - Writing to /sys/class/devcoredump/disabled will destroy the
 	 *   coredump synchronously.
@@ -143,7 +143,7 @@ static ssize_t devcd_data_write(struct file *filp, struct kobject *kobj,
 	 * that will cause a reschedule if the timer already fired.
 	 */
 	if (cancel_delayed_work(&devcd->del_wk))
-		schedule_delayed_work(&devcd->del_wk, 0);
+		queue_delayed_work(system_power_efficient_wq, &devcd->del_wk, 0);
 
 	return count;
 }
@@ -389,7 +389,7 @@ void dev_coredumpm(struct device *dev, struct module *owner,
 	mutex_lock(&devcd->mutex);
 	devcd->init_completed = false;
 	INIT_DELAYED_WORK(&devcd->del_wk, devcd_del);
-	schedule_delayed_work(&devcd->del_wk, DEVCD_TIMEOUT);
+	queue_delayed_work(system_power_efficient_wq, &devcd->del_wk, DEVCD_TIMEOUT);
 
 	if (device_add(&devcd->devcd_dev))
 		goto put_device;

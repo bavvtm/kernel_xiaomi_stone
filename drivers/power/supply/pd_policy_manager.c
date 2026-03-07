@@ -1229,7 +1229,7 @@ static void usbpd_pm_workfunc(struct work_struct *work)
     usbpd_update_ibat_curr(pdpm);
 
     if (!usbpd_pm_sm(pdpm) && pdpm->pd_active)
-        schedule_delayed_work(&pdpm->pm_work,
+        queue_delayed_work(system_power_efficient_wq, &pdpm->pm_work,
             msecs_to_jiffies(PM_WORK_RUN_INTERVAL));
 
 }
@@ -1269,7 +1269,7 @@ static void usbpd_pd_contact(struct usbpd_pm *pdpm, bool connected)
         pr_err("[SC manager] >>start cp charging pps support %d\n", 
             pdpm->pps_supported);
         if (pdpm->pps_supported)
-            schedule_delayed_work(&pdpm->pm_work, 0);
+            queue_delayed_work(system_power_efficient_wq, &pdpm->pm_work, 0);
         else
             pdpm->pd_active = false;
         power_supply_changed(pdpm->usb_psy);

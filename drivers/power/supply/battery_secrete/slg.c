@@ -225,7 +225,7 @@ static void authentic_work(struct work_struct *work)
 		retry_authentic_times++;
 		if (retry_authentic_times < AUTHENTIC_COUNT_MAX) {
 			ds_log("battery authentic work begin to restart.\n");
-			schedule_delayed_work(&slg_data->authentic_work,
+			queue_delayed_work(system_power_efficient_wq, &slg_data->authentic_work,
 				msecs_to_jiffies(authentic_period_ms));
 		}
 
@@ -312,7 +312,7 @@ static int slg_probe(struct platform_device *pdev)
 	retval =	authenticate_battery();
 	if (retval != 0) {
 		ds_log("Loren authenticate_battery failed,create schedule_delayed_work.");
-		schedule_delayed_work(&slg_data->authentic_work,
+		queue_delayed_work(system_power_efficient_wq, &slg_data->authentic_work,
 				msecs_to_jiffies(500));
 	}
 #endif

@@ -4060,7 +4060,7 @@ done_free_sp:
 		ql_dbg(ql_dbg_disc, vha, 0xffff,
 		    "%s: schedule\n", __func__);
 		vha->scan.scan_flags |= SF_QUEUED;
-		schedule_delayed_work(&vha->scan.scan_work, 5);
+		queue_delayed_work(system_power_efficient_wq, &vha->scan.scan_work, 5);
 	}
 	spin_unlock_irqrestore(&vha->work_lock, flags);
 
@@ -4223,7 +4223,7 @@ done_free_sp:
 		ql_dbg(ql_dbg_disc, vha, 0xffff,
 		    "%s: schedule\n", __func__);
 		vha->scan.scan_flags |= SF_QUEUED;
-		schedule_delayed_work(&vha->scan.scan_work, 5);
+		queue_delayed_work(system_power_efficient_wq, &vha->scan.scan_work, 5);
 	}
 	spin_unlock_irqrestore(&vha->work_lock, flags);
 

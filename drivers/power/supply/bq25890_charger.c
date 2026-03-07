@@ -663,7 +663,7 @@ static int bq25890_power_supply_get_property(struct power_supply *psy,
 			if(bq->old_online != online){
 				bq->update_cont = 20;
 				cancel_delayed_work(&bq->xm_prop_change_work);
-				schedule_delayed_work(&bq->xm_prop_change_work, msecs_to_jiffies(10));
+				queue_delayed_work(system_power_efficient_wq, &bq->xm_prop_change_work, msecs_to_jiffies(10));
 			}
 		}
 
@@ -1052,10 +1052,10 @@ static void bq25890_handle_state_change(struct bq25890_device *bq,
 			bq25890_field_write(bq, F_FORCE_VINDPM, 1);
 			bq25890_field_write(bq, F_VINDPM, 0x16);//Vindpm 4.8V
 		
-			schedule_delayed_work(&bq->detect_vbat_set_vindpm_work, msecs_to_jiffies(2000));
+			queue_delayed_work(system_power_efficient_wq, &bq->detect_vbat_set_vindpm_work, msecs_to_jiffies(2000));
                 }
 		if (new_state->vbus_status == 5 && bq->detect_force_dpdm_count < 1) {		// float
-			schedule_delayed_work(&bq->detect_float_work, msecs_to_jiffies(1000));
+			queue_delayed_work(system_power_efficient_wq, &bq->detect_float_work, msecs_to_jiffies(1000));
 		}
 		request_dpdm(bq,0); //open ap dp dm
 	}
@@ -1638,7 +1638,7 @@ static void bq25890_dumpic_work(struct work_struct *work)
 			bq25890_charger_stop_charge(bq);
 		}
 	}
-	schedule_delayed_work(&bq->dumpic_work, msecs_to_jiffies(10000));
+	queue_delayed_work(system_power_efficient_wq, &bq->dumpic_work, msecs_to_jiffies(10000));
 }
 
 static void bq25890_detect_vbat_set_vindpm_work(struct work_struct *work)
@@ -1660,7 +1660,7 @@ static void bq25890_detect_vbat_set_vindpm_work(struct work_struct *work)
 		// vbat>4.3v,vindpm 4.8
 		bq25890_field_write(bq, F_VINDPM, 0x16);
 	}
-	schedule_delayed_work(&bq->detect_vbat_set_vindpm_work, msecs_to_jiffies(10000));
+	queue_delayed_work(system_power_efficient_wq, &bq->detect_vbat_set_vindpm_work, msecs_to_jiffies(10000));
 
 }
 
@@ -2231,7 +2231,7 @@ static void generate_xm_charge_uvent(struct work_struct *work)
 	free_page((unsigned long)prop_buf);
 	bq->update_cont = count - 1;
 
-	schedule_delayed_work(&bq->xm_prop_change_work, msecs_to_jiffies(100));
+	queue_delayed_work(system_power_efficient_wq, &bq->xm_prop_change_work, msecs_to_jiffies(100));
 
 	return;
 }
@@ -2515,7 +2515,7 @@ static int bq25890_probe(struct i2c_client *client,
 	}
 
 	INIT_DELAYED_WORK(&bq->dumpic_work, bq25890_dumpic_work);
-	schedule_delayed_work(&bq->dumpic_work, msecs_to_jiffies(10000));
+	queue_delayed_work(system_power_efficient_wq, &bq->dumpic_work, msecs_to_jiffies(10000));
 
 	INIT_DELAYED_WORK(&bq->detect_vbat_set_vindpm_work, bq25890_detect_vbat_set_vindpm_work);
 	INIT_DELAYED_WORK(&bq->detect_float_work, bq25890_detect_float_work);
@@ -2573,9 +2573,9 @@ static int bq25890_probe(struct i2c_client *client,
 	}
 
 	// INIT_DELAYED_WORK(&bq->board_therm_work, board_therm);
-	// schedule_delayed_work(&bq->board_therm_work, msecs_to_jiffies(10000));
+	// queue_delayed_work(system_power_efficient_wq, &bq->board_therm_work, msecs_to_jiffies(10000));
 	INIT_DELAYED_WORK(&bq->xm_prop_change_work, generate_xm_charge_uvent);
-	schedule_delayed_work(&bq->xm_prop_change_work, msecs_to_jiffies(30000));
+	queue_delayed_work(system_power_efficient_wq, &bq->xm_prop_change_work, msecs_to_jiffies(30000));
 
 	dev_err(dev, "bq25890 probe power_supply init success\n");
 

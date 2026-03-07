@@ -1722,7 +1722,7 @@ static void authentic_work(struct work_struct *work)
 		retry_authentic++;
 		if (retry_authentic < AUTHENTIC_COUNT_MAX) {
 			ds_log("battery authentic work begin to restart.\n");
-			schedule_delayed_work(&ds28e16_data->authentic_work,
+			queue_delayed_work(system_power_efficient_wq, &ds28e16_data->authentic_work,
 				msecs_to_jiffies(authentic_period_ms));
 		}
 
@@ -1801,7 +1801,7 @@ static int ds28e16_probe(struct platform_device *pdev)
 	b_val.intval = AuthenticateDS28E16(auth_ANON, auth_BDCONST, 0,
 			pagenumber, challenge, session_seed, S_secret);
 	if (b_val.intval != true) {
-		schedule_delayed_work(&ds28e16_data->authentic_work,
+		queue_delayed_work(system_power_efficient_wq, &ds28e16_data->authentic_work,
 				msecs_to_jiffies(500));
 	}
 
