@@ -728,22 +728,36 @@ static int dsi_display_validate_status(struct dsi_display_ctrl *ctrl,
 		struct dsi_panel *panel)
 {
 	int rc = 0;
+	int retry = 3;
 
-	rc = dsi_display_read_status(ctrl, panel);
-	if (rc <= 0) {
-		goto exit;
-	} else {
-		/*
-		 * panel status read successfully.
-		 * check for validity of the data read back.
-		 */
-		rc = dsi_display_validate_reg_read(panel);
-		if (!rc) {
+	if (panel->power_mode != SDE_MODE_DPMS_ON)
+		return 0;
+
+	while (retry--) {
+		rc = dsi_display_read_status(ctrl, panel);
+		if (rc > 0) {
+			if (dsi_display_validate_reg_read(panel)) {
+				return rc;
+			}
 			rc = -EINVAL;
+		}
+		if (rc > 0) {
+			msleep(50);
+		}
+		if (rc <= 0) {
 			goto exit;
+		} else {
+			/*
+			 * panel status read successfully.
+			 * check for validity of the data read back.
+			 */
+			rc = dsi_display_validate_reg_read(panel);
+			if (!rc) {
+				rc = -EINVAL;
+				goto exit;
+			}
 		}
 	}
-
 exit:
 	return rc;
 }
@@ -1298,23 +1312,37 @@ int dsi_display_set_power(struct drm_connector *connector,
 {
 	struct drm_notify_data g_notify_data;
 	struct dsi_display *display = disp;
+	struct sde_connector *sde_conn = to_sde_connector(connector);
+	int rc = 0;
+#ifdef CONFIG_HQ_QGKI
 	struct drm_device *dev = NULL;
-	int rc = 0, event = 0;
+	int event = 0;
+#endif
 
 	if (!display || !display->panel) {
 		DSI_ERR("invalid display/panel\n");
 		return -EINVAL;
-	} else {
-		dev = connector->dev;
-#ifdef CONFIG_HQ_QGKI
-		event = dev->doze_state;
-#endif
 	}
+
+	if (sde_conn && sde_conn->panel_dead) {
+		DSI_ERR("panel is dead, aborting power transition\n");
+		return -ESHUTDOWN;
+	}
+
+#ifdef CONFIG_HQ_QGKI
+	if (connector) {
+		dev = connector->dev;
+		if (dev)
+			event = dev->doze_state;
+	}
+#endif
 
 	g_notify_data.data = &power_mode;
 	switch (power_mode) {
 	case SDE_MODE_DPMS_LP1:
+#ifdef CONFIG_HQ_QGKI
 		display->panel->is_aod = true;
+#endif
 		drm_notifier_call_chain(DRM_EARLY_EVENT_BLANK, &g_notify_data);
 		if (display->panel->power_mode == SDE_MODE_DPMS_LP2) {
 			if (dsi_display_set_ulp_load(display, false) < 0)
@@ -1324,7 +1352,9 @@ int dsi_display_set_power(struct drm_connector *connector,
 		drm_notifier_call_chain(DRM_EVENT_BLANK, &g_notify_data);
 		break;
 	case SDE_MODE_DPMS_LP2:
+#ifdef CONFIG_HQ_QGKI
 		display->panel->is_aod = true;
+#endif
 		drm_notifier_call_chain(DRM_EARLY_EVENT_BLANK, &g_notify_data);
 		dsi_panel_set_backlight(display->panel, dsi_panel_get_aod_bl(display));
 		usleep_range(20000, 30000);
@@ -1334,7 +1364,9 @@ int dsi_display_set_power(struct drm_connector *connector,
 		drm_notifier_call_chain(DRM_EVENT_BLANK, &g_notify_data);
 		break;
 	case SDE_MODE_DPMS_ON:
+#ifdef CONFIG_HQ_QGKI
 		display->panel->is_aod = false;
+#endif
 		if (display->panel->power_mode == SDE_MODE_DPMS_LP2) {
 			if (dsi_display_set_ulp_load(display, false) < 0)
 				DSI_ERR("failed to set load for on state\n");
@@ -1353,21 +1385,19 @@ int dsi_display_set_power(struct drm_connector *connector,
 		}
 		break;
 	case SDE_MODE_DPMS_OFF:
-		display->panel->is_aod = false;
-	default:
 #ifdef CONFIG_HQ_QGKI
-		if (dev->pre_state != SDE_MODE_DPMS_LP1 &&
-			dev->pre_state != SDE_MODE_DPMS_LP2)
-			break;
+		display->panel->is_aod = false;
+		break;
 #endif
-		drm_notifier_call_chain(DRM_EARLY_EVENT_BLANK, &g_notify_data);
-		rc = dsi_panel_set_nolp(display->panel);
-		drm_notifier_call_chain(DRM_EVENT_BLANK, &g_notify_data);
+	default:
 		return rc;
 	}
+
 #ifdef CONFIG_HQ_QGKI
-	dev->pre_state = power_mode;
+	if (dev)
+		dev->pre_state = power_mode;
 #endif
+
 	SDE_EVT32(display->panel->power_mode, power_mode, rc);
 	DSI_DEBUG("Power mode transition from %d to %d %s",
 			display->panel->power_mode, power_mode,

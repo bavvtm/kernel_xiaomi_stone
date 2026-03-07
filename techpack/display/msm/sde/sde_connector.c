@@ -649,12 +649,22 @@ static int _sde_connector_update_power_locked(struct sde_connector *c_conn)
 			c_conn->dpms_mode, c_conn->lp_mode, mode);
 
 	if (mode != c_conn->last_panel_power_mode && c_conn->ops.set_power) {
+		if (c_conn->panel_dead) {
+			SDE_ERROR("conn %d panel is dead, skip set_power\n",
+				   connector->base.id);
+			return -ESHUTDOWN;
+		}
 		display = c_conn->display;
 		set_power = c_conn->ops.set_power;
 
 		mutex_unlock(&c_conn->lock);
 		rc = set_power(connector, mode, display);
 		mutex_lock(&c_conn->lock);
+		if (c_conn->panel_dead) {
+			SDE_ERROR("conn %d detected dead panel after lock re-acquired\n",
+				   connector->base.id);
+			return -ESHUTDOWN;
+		}
 	}
 	c_conn->last_panel_power_mode = mode;
 
@@ -824,6 +834,12 @@ static int _sde_connector_update_dirty_properties(
 	}
 
 	c_conn = to_sde_connector(connector);
+
+	if (c_conn->panel_dead) {
+		SDE_DEBUG("panel is dead, skip dirty property update\n");
+		return 0;
+	}
+
 	c_state = to_sde_connector_state(connector->state);
 
 	mutex_lock(&c_conn->property_info.property_lock);
@@ -2472,6 +2488,11 @@ void _sde_connector_report_panel_dead(struct sde_connector *conn,
 
 	if (!conn)
 		return;
+
+	if (conn->last_panel_power_mode != SDE_MODE_DPMS_ON) {
+		SDE_ERROR("Panel in transition/AOD, ignoring ESD report\n");
+		return;
+	}
 
 	/* Panel dead notification can come:
 	 * 1) ESD thread
