@@ -7,7 +7,7 @@ bold=$(tput bold)
 normal=$(tput sgr0)
 
 TARGET_FAKE_VERSION="5.4.302"
-export KBUILD_BUILD_USER="sparxielololol"
+export KBUILD_BUILD_USER="sparxiclelololol"
 export TZ=Asia/Jakarta
 export KBUILD_BUILD_HOST="build-host"
 export KERNELDIR="$(pwd)"
@@ -19,7 +19,7 @@ export DEFCONFIG="stone_defconfig"
 export ZIP_DIR="${KERNELDIR}/files"
 export IMAGE="${OUTDIR}/arch/arm64/boot/Image"
 export VARI="meme_hos"
-export PATH="$(pwd)/22/bin:$PATH"
+export PATH="$(pwd)/../clang/install/bin:$PATH"
 
 while (( ${#} )); do
     case ${1} in
@@ -32,6 +32,19 @@ done
 [[ -z ${ZIP} ]] && { echo "${bold}LOADING-_-....${normal}"; }
 
 curl -LSs "https://raw.githubusercontent.com/ReSukiSU/ReSukiSU/main/kernel/setup.sh" | bash
+
+
+# Path to KernelSU source directory
+KSU_LINK="drivers/kernelsu"
+
+if [ -d "$KSU_LINK" ]; then
+    echo "Silent exessive logging of ksu"
+    find -L "$KSU_LINK" -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/\bksu_pr_info(/pr_debug(/g' {} +
+    find -L "$KSU_LINK" -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/\bpr_info(/pr_debug(/g' {} +
+else
+    echo "ksu is missing! Aborted"
+    exit 1
+fi
 
 if [[ "$CLEAN" == true ]]; then
     echo "[*] Cleaning out directory..."
@@ -111,7 +124,7 @@ ANDROID_RELEASE=$(echo "$AOSP_BRANCH" | sed -E 's/^(android[0-9]+)-.*/\1/')
 GIT_SHA=$(git rev-parse --verify HEAD 2>/dev/null | cut -c1-12)
 [[ -n "$GIT_SHA" ]] && GIT_SUFFIX="-g${GIT_SHA}" || GIT_SUFFIX=""
 
-AB_NUM="-abogki$(date +%s | cut -c4-10)"
+AB_NUM="-ab$(date +%s | cut -c4-10)"
 
 FULL_GKI_STRING="-${ANDROID_RELEASE}-${KMI_GENERATION}${GIT_SUFFIX}${AB_NUM}"
 echo "[*] Generating .config..."
@@ -121,7 +134,7 @@ RAW_LOCAL=$(grep "CONFIG_LOCALVERSION=" "arch/arm64/configs/$DEFCONFIG" | cut -d
 
 if [[ "$RAW_LOCAL" == *"-android"* ]]; then
     echo "[*] Detected GKI String, Cleanup!..."
-    CLEAN_LOCAL=$(echo "$RAW_LOCAL" | sed -E 's/^-android[0-9]+(-[0-9]+\.[0-9]+)?-[0-9]+(-g[a-f0-9]+)?(-abogki[0-9]+)?//')
+    CLEAN_LOCAL=$(echo "$RAW_LOCAL" | sed -E 's/^-android[0-9]+(-[0-9]+\.[0-9]+)?-[0-9]+(-g[a-f0-9]+)?(-ab[0-9]+)?//')
 else
     echo "[*] LOCALVERSION is clean, now patch it!."
     CLEAN_LOCAL="$RAW_LOCAL"
@@ -145,7 +158,7 @@ make -j$(nproc --all) O=out ARCH=arm64 \
 echo -e "==========================="
 echo -e "   COMPILE KERNEL COMPLETE "
 echo -e "==========================="
-#TMP DROP IT
+# TMP DROP IT
 #cd out/arch/arm64/boot
 #curl -LSs "https://raw.githubusercontent.com/ShirkNeko/SukiSU_patch/refs/heads/main/kpm/patch_linux" -o patch
 #chmod 777 patch
