@@ -461,7 +461,7 @@ static int batt_psy_get_prop(struct power_supply *psy,
 			chg->old_real_type = chg->real_type;
 			pr_err("usb type changed , schedule batt_chg_work\n");
 			cancel_delayed_work(&chg->batt_chg_work);
-			schedule_delayed_work(&chg->batt_chg_work, msecs_to_jiffies(100));
+			queue_delayed_work(system_power_efficient_wq, &chg->batt_chg_work, msecs_to_jiffies(100));
 		}
 		rc = get_usb_charger_type(chg, &chg_type);
 		if (chg_type != 0 && (chg->battery_temp >= 480 || chg->is_stop_charge)) {
@@ -1142,11 +1142,11 @@ static void batt_chg_main(struct work_struct *work)
 		if(chg->is_pps_on) {
 			time = 3000;
 			power_supply_changed(chg->batt_psy);
-			schedule_delayed_work(&chg->batt_chg_work, msecs_to_jiffies(time));
+			queue_delayed_work(system_power_efficient_wq, &chg->batt_chg_work, msecs_to_jiffies(time));
 		} else {
 			time = 3000;
 			power_supply_changed(chg->batt_psy);
-			schedule_delayed_work(&chg->batt_chg_work, msecs_to_jiffies(time));
+			queue_delayed_work(system_power_efficient_wq, &chg->batt_chg_work, msecs_to_jiffies(time));
 		}
 	} else {
 		if(chg->wakeup_flag) {
@@ -1162,9 +1162,9 @@ static void batt_chg_main(struct work_struct *work)
 			chg->power_supply_count += 1;
 		}
 		if(chg->ui_soc <= 10 || chg->battery_temp > 550 || chg->battery_temp < 50)
-			schedule_delayed_work(&chg->batt_chg_work, msecs_to_jiffies(10000));
+			queue_delayed_work(system_power_efficient_wq, &chg->batt_chg_work, msecs_to_jiffies(10000));
 		else
-			schedule_delayed_work(&chg->batt_chg_work, msecs_to_jiffies(30000));
+			queue_delayed_work(system_power_efficient_wq, &chg->batt_chg_work, msecs_to_jiffies(30000));
 	}
 }
 
@@ -1209,9 +1209,9 @@ static void lower_poweroff_work(struct work_struct *work)
 	}	
 
 	if (batt_uV < CM_UVLO_CALIBRATION_VOLTAGE_THRESHOLD)
-		schedule_delayed_work(&chg->lower_poweroff_work, msecs_to_jiffies(1000));
+		queue_delayed_work(system_power_efficient_wq, &chg->lower_poweroff_work, msecs_to_jiffies(1000));
 	else
-		schedule_delayed_work(&chg->lower_poweroff_work, msecs_to_jiffies(10000));
+		queue_delayed_work(system_power_efficient_wq, &chg->lower_poweroff_work, msecs_to_jiffies(10000));
 }
 
 static void xm_charger_debug_info_print_work(struct work_struct *work)
@@ -1221,7 +1221,7 @@ static void xm_charger_debug_info_print_work(struct work_struct *work)
 
 	get_usb_charger_type(chg,&type);
 
-	schedule_delayed_work(&chg->charger_debug_info_print_work, msecs_to_jiffies(1000));
+	queue_delayed_work(system_power_efficient_wq, &chg->charger_debug_info_print_work, msecs_to_jiffies(1000));
 }
 #endif
 
@@ -1304,10 +1304,10 @@ static int batt_chg_probe(struct platform_device *pdev)
 		wakeup_source_unregister(batt_chg->wt_ws);
 	}
 
-	//schedule_delayed_work(&batt_chg->lower_poweroff_work, msecs_to_jiffies(3000));
-	schedule_delayed_work(&batt_chg->batt_chg_work, msecs_to_jiffies(3000));
+	//queue_delayed_work(system_power_efficient_wq, &batt_chg->lower_poweroff_work, msecs_to_jiffies(3000));
+	queue_delayed_work(system_power_efficient_wq, &batt_chg->batt_chg_work, msecs_to_jiffies(3000));
 	//INIT_DELAYED_WORK( &batt_chg->charger_debug_info_print_work, xm_charger_debug_info_print_work);
-	//schedule_delayed_work(&batt_chg->charger_debug_info_print_work, 30 * HZ);
+	//queue_delayed_work(system_power_efficient_wq, &batt_chg->charger_debug_info_print_work, 30 * HZ);
 	g_batt_chg = batt_chg;
 	pr_err("batt_chg probe success\n");
 	return 0;

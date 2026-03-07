@@ -272,7 +272,7 @@ static void usb_dwork_handler(struct work_struct *work)
 		if (ret < 0 || val.intval == POWER_SUPPLY_USB_TYPE_UNKNOWN) {
 			if (rpmd->usb_type_polling_cnt <
 			    USB_TYPE_POLLING_CNT_MAX) {
-				schedule_delayed_work(&rpmd->usb_dwork,
+				queue_delayed_work(system_power_efficient_wq, &rpmd->usb_dwork,
 						msecs_to_jiffies(
 						USB_TYPE_POLLING_INTERVAL));
 			break;
@@ -406,7 +406,7 @@ static int pd_tcp_notifier_call(struct notifier_block *nb,
 			cancel_delayed_work_sync(&rpmd->usb_dwork);
 			rpmd->usb_dr = DR_DEVICE;
 			rpmd->usb_type_polling_cnt = 0;
-			schedule_delayed_work(&rpmd->usb_dwork,
+			queue_delayed_work(system_power_efficient_wq, &rpmd->usb_dwork,
 					      msecs_to_jiffies(
 					      USB_TYPE_POLLING_INTERVAL));
 			typec_set_data_role(rpmd->typec_port, TYPEC_DEVICE);
@@ -428,7 +428,7 @@ static int pd_tcp_notifier_call(struct notifier_block *nb,
 			 */
 			cancel_delayed_work_sync(&rpmd->usb_dwork);
 			rpmd->usb_dr = DR_IDLE;
-			schedule_delayed_work(&rpmd->usb_dwork, 0);
+			queue_delayed_work(system_power_efficient_wq, &rpmd->usb_dwork, 0);
 		} else if (old_state == TYPEC_UNATTACHED &&
 			   (new_state == TYPEC_ATTACHED_SRC ||
 			    new_state == TYPEC_ATTACHED_DEBUG)) {
@@ -441,7 +441,7 @@ static int pd_tcp_notifier_call(struct notifier_block *nb,
 			/* enable host connection */
 			cancel_delayed_work_sync(&rpmd->usb_dwork);
 			rpmd->usb_dr = DR_HOST;
-			schedule_delayed_work(&rpmd->usb_dwork, 0);
+			queue_delayed_work(system_power_efficient_wq, &rpmd->usb_dwork, 0);
 			typec_set_data_role(rpmd->typec_port, TYPEC_HOST);
 			typec_set_pwr_role(rpmd->typec_port, TYPEC_SOURCE);
 			switch (noti->typec_state.local_rp_level) {
@@ -465,7 +465,7 @@ static int pd_tcp_notifier_call(struct notifier_block *nb,
 			/* disable host connection */
 			cancel_delayed_work_sync(&rpmd->usb_dwork);
 			rpmd->usb_dr = DR_IDLE;
-			schedule_delayed_work(&rpmd->usb_dwork, 0);
+			queue_delayed_work(system_power_efficient_wq, &rpmd->usb_dwork, 0);
 		} else if (old_state == TYPEC_UNATTACHED &&
 			   new_state == TYPEC_ATTACHED_AUDIO) {
 			dev_err(rpmd->dev, "%s Audio plug in\n", __func__);
@@ -617,7 +617,7 @@ static int pd_tcp_notifier_call(struct notifier_block *nb,
 			 */
 			cancel_delayed_work_sync(&rpmd->usb_dwork);
 			rpmd->usb_dr = DR_HOST_TO_DEVICE;
-			schedule_delayed_work(&rpmd->usb_dwork, 0);
+			queue_delayed_work(system_power_efficient_wq, &rpmd->usb_dwork, 0);
 			typec_set_data_role(rpmd->typec_port, TYPEC_DEVICE);
 		} else if (noti->swap_state.new_role == PD_ROLE_DFP) {
 			dev_err(rpmd->dev, "%s swap data role to host\n",
@@ -628,7 +628,7 @@ static int pd_tcp_notifier_call(struct notifier_block *nb,
 			 */
 			cancel_delayed_work_sync(&rpmd->usb_dwork);
 			rpmd->usb_dr = DR_DEVICE_TO_HOST;
-			schedule_delayed_work(&rpmd->usb_dwork, 0);
+			queue_delayed_work(system_power_efficient_wq, &rpmd->usb_dwork, 0);
 			typec_set_data_role(rpmd->typec_port, TYPEC_HOST);
 		}
 		break;

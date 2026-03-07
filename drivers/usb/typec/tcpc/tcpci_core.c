@@ -436,7 +436,7 @@ int tcpc_device_irq_enable(struct tcpc_device *tcpc)
 		return ret;
 	}
 
-	schedule_delayed_work(&tcpc->event_init_work, 0);
+	queue_delayed_work(system_power_efficient_wq, &tcpc->event_init_work, 0);
 
 	return 0;
 }
@@ -488,7 +488,7 @@ static int bat_nb_call_func(
 
 	if (val == PSY_EVENT_PROP_CHANGED &&
 		strcmp(psy->desc->name, "battery") == 0)
-		schedule_delayed_work(&tcpc->bat_update_work, 0);
+		queue_delayed_work(system_power_efficient_wq, &tcpc->bat_update_work, 0);
 	return NOTIFY_OK;
 }
 #endif /* CONFIG_USB_PD_REV30 */

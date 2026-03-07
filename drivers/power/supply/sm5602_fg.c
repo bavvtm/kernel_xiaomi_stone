@@ -334,7 +334,7 @@ static int fg_read_status(struct sm_fg_chip *sm)
 static int fg_status_changed(struct sm_fg_chip *sm)
 {
 	cancel_delayed_work(&sm->monitor_work);
-	schedule_delayed_work(&sm->monitor_work, 0);
+	queue_delayed_work(system_power_efficient_wq, &sm->monitor_work, 0);
 	power_supply_changed(sm->fg_psy);
 
 	return IRQ_HANDLED;
@@ -1714,7 +1714,7 @@ static void fg_external_power_changed(struct power_supply *psy)
 	struct sm_fg_chip *sm = power_supply_get_drvdata(psy);
 
 	cancel_delayed_work(&sm->monitor_work);
-	schedule_delayed_work(&sm->monitor_work, 0);
+	queue_delayed_work(system_power_efficient_wq, &sm->monitor_work, 0);
 }
 
 static char *sm5602_fg_supplied_to[] = {
@@ -2012,7 +2012,7 @@ static void soc_monitor_work(struct work_struct *work)
 			sm->param.batt_soc, sm->param.batt_raw_soc,
 			sm->param.batt_ma, sm->charge_status);
 
-	schedule_delayed_work(&sm->soc_monitor_work, msecs_to_jiffies(MONITOR_SOC_WAIT_PER_MS));
+	queue_delayed_work(system_power_efficient_wq, &sm->soc_monitor_work, msecs_to_jiffies(MONITOR_SOC_WAIT_PER_MS));
 }
 #endif
 #endif
@@ -2141,7 +2141,7 @@ static void fg_monitor_workfunc(struct work_struct *work)
 	fg_recharge(sm);
 	
 	if (poll_interval > 0) {
-		schedule_delayed_work(&sm->monitor_work, msecs_to_jiffies(poll_interval * 1000)); /* poll_interval(10) * 1000 = 10 sec */
+		queue_delayed_work(system_power_efficient_wq, &sm->monitor_work, msecs_to_jiffies(poll_interval * 1000)); /* poll_interval(10) * 1000 = 10 sec */
 	}
 
 }
@@ -3368,7 +3368,7 @@ static bool fg_init(struct i2c_client *client)
 #ifdef ENABLE_INIT_DELAY_TEMP		
 		sm->en_init_delay_temp = 1;
 		cancel_delayed_work_sync(&sm->init_delay_temp_work);
-		schedule_delayed_work(&sm->init_delay_temp_work, msecs_to_jiffies(DELAY_TEMP_TIME_5000MS)); /* 5 sec */
+		queue_delayed_work(system_power_efficient_wq, &sm->init_delay_temp_work, msecs_to_jiffies(DELAY_TEMP_TIME_5000MS)); /* 5 sec */
 	} else {
 		sm->en_init_delay_temp = 0;
 	}
@@ -4034,12 +4034,12 @@ static int sm_fg_probe(struct i2c_client *client,
 
 	fg_dump_debug(sm);
 
-	schedule_delayed_work(&sm->monitor_work, msecs_to_jiffies(10000)); /* 10 sec */
+	queue_delayed_work(system_power_efficient_wq, &sm->monitor_work, msecs_to_jiffies(10000)); /* 10 sec */
 
 	sm2 = sm;
 
 #if 0	
-	schedule_delayed_work(&sm->soc_monitor_work, msecs_to_jiffies(MONITOR_SOC_WAIT_MS));
+	queue_delayed_work(system_power_efficient_wq, &sm->soc_monitor_work, msecs_to_jiffies(MONITOR_SOC_WAIT_MS));
 #endif	
 	pr_info("sm fuel gauge probe successfully, %s\n",device2str[sm->chip]);
 
