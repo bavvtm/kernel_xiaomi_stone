@@ -285,11 +285,11 @@ struct dsi_panel {
 
 	u8 dsi_refresh_flag;
 	u32 flat_mode;
-	bool is_aod;
 	struct delayed_work nolp_bl_delay_work;
 #ifdef CONFIG_DRM_SDE_EXPO
 	bool dimlayer_exposure;
 #endif
+	bool is_aod;
 };
 
 struct dsi_read_config {
