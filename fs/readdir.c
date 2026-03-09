@@ -175,7 +175,7 @@ static int fillonedir(struct dir_context *ctx, const char *name, int namlen,
 	}
 	if (susfs_is_inode_sus_path(inode)) {
 		iput(inode);
-		return true;
+		return 0;
 	}
 	iput(inode);
 orig_flow:
@@ -281,7 +281,7 @@ static int filldir(struct dir_context *ctx, const char *name, int namlen,
 	}
 	if (susfs_is_inode_sus_path(inode)) {
 		iput(inode);
-		return true;
+		return 0;
 	}
 	iput(inode);
 orig_flow:
@@ -387,7 +387,7 @@ static int filldir64(struct dir_context *ctx, const char *name, int namlen,
 	}
 	if (susfs_is_inode_sus_path(inode)) {
 		iput(inode);
-		return true;
+		return 0;
 	}
 	iput(inode);
 orig_flow:
@@ -508,7 +508,7 @@ static int compat_fillonedir(struct dir_context *ctx, const char *name,
 	}
 	if (susfs_is_inode_sus_path(inode)) {
 		iput(inode);
-		return true;
+		return 0;
 	}
 	iput(inode);
 orig_flow:
@@ -619,7 +619,7 @@ static int compat_filldir(struct dir_context *ctx, const char *name, int namlen,
 	}
 	if (susfs_is_inode_sus_path(inode)) {
 		iput(inode);
-		return true;
+		return 0;
 	}
 	iput(inode);
 orig_flow:
