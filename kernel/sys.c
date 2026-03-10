@@ -618,7 +618,7 @@ SYSCALL_DEFINE1(setuid, uid_t, uid)
 	return __sys_setuid(uid);
 }
 
-#ifdef CONFIG_KSU_MANUAL_HOOK_AUTO_SETUID_HOOK
+#if defined(CONFIG_KSU_MANUAL_HOOK_AUTO_SETUID_HOOK) || defined(CONFIG_KSU_SUSFS)
 extern int ksu_handle_setresuid(uid_t ruid, uid_t euid, uid_t suid);
 #endif
 
@@ -634,7 +634,7 @@ long __sys_setresuid(uid_t ruid, uid_t euid, uid_t suid)
 	int retval;
 	kuid_t kruid, keuid, ksuid;
 
-#ifdef CONFIG_KSU_MANUAL_HOOK_AUTO_SETUID_HOOK
+#if defined(CONFIG_KSU_MANUAL_HOOK_AUTO_SETUID_HOOK) || defined(CONFIG_KSU_SUSFS)
   (void)ksu_handle_setresuid(ruid, euid, suid);
 #endif
 
@@ -1288,6 +1288,9 @@ static int override_version(struct new_utsname __user *name)
 #endif
 }
 
+#ifdef CONFIG_KSU_SUSFS_SPOOF_UNAME
+extern void susfs_spoof_uname(struct new_utsname* tmp);
+#endif
 SYSCALL_DEFINE1(newuname, struct new_utsname __user *, name)
 {
 	struct new_utsname tmp;
@@ -1296,6 +1299,9 @@ SYSCALL_DEFINE1(newuname, struct new_utsname __user *, name)
 
 	down_read(&uts_sem);
 	memcpy(&tmp, utsname(), sizeof(tmp));
+#ifdef CONFIG_KSU_SUSFS_SPOOF_UNAME
+	susfs_spoof_uname(&tmp);
+#endif
 	up_read(&uts_sem);
 
 	rcu_read_lock();
